@@ -12,28 +12,16 @@
           <v-card>
             <div class="white elevation-2">
               <v-toolbar flat dense dark class="cyan">
-                <v-toolbar-title>Enregistrez-vous</v-toolbar-title>
+                <v-toolbar-title>Connectez-vous</v-toolbar-title>
               </v-toolbar>
             </div>
             <v-container>
               <div>
-                <v-form v-model="valid" autocomplete="off">
+                <v-form v-model="valid">
                   <v-text-field
                     v-model="email"
                     :rules="notEmptyRules"
                     label="Votre adresse email"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="displayName"
-                    :rules="notEmptyRules"
-                    label="Votre nom"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="avatar"
-                    :rules="notEmptyRules"
-                    label="Votre avatar"
                     required
                   ></v-text-field>
                   <v-text-field
@@ -42,25 +30,15 @@
                     label="Votre mot de passe"
                     type="password"
                     :counter="8"
-                    autocomplete="new-password"
                     required
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="confirmPassword"
-                    :rules="confirmPasswordRules"
-                    label="Confirmez votre mot de passe"
-                    type="password"
-                    :counter="8"
-                    autocomplete="new-password"
-                    required
-                  ></v-text-field>                  
+                  ></v-text-field>                
                   <v-btn
                     class="cyan"
                     id="register"
                     :disabled="!valid"
-                    @click="register"
+                    @click="login"
                   >
-                    Enregistrez-vous
+                    Connectez-vous
                   </v-btn>
                   <v-btn @click="clear">clear</v-btn>
                 </v-form>
@@ -78,7 +56,7 @@ import AuthenticationService from '@/services/AuthenticationService'
 import { notEmptyRules, passwordRules } from '@/validators'
 
 export default {
-  data: vm => ({
+  data: () => ({
     valid: false,
     email: '',
     displayName: '',
@@ -87,20 +65,13 @@ export default {
     confirmPassword: '',
     error: null,
     notEmptyRules,
-    passwordRules,
-    confirmPasswordRules: [
-      v => !!v || 'Le champ est obligatoire',
-      v => v.length >= 8 || 'Le champ doit contenir au moins 8 caractères',
-      v => v === vm.password || 'Les mots de passe ne correspondent pas'
-    ]
+    passwordRules
   }),
   methods: {
-    async register() {
+    async login() {
       try {
-        const response = await AuthenticationService.register({
+        const response = await AuthenticationService.login({
           email: this.email,
-          displayName: this.displayName,
-          avatar: this.avatar,
           password: this.password
         })
         this.$store.dispatch('setToken', response.data.token)
@@ -110,7 +81,7 @@ export default {
       }
     },
     clear() {
-      this.email = this.displayName = this.avatar = this.password = this.confirmPassword = this.error =
+      this.email = this.displayName = this.avatar = this.password = this.confirmPassword =
         ''
     }
   }
